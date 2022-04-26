@@ -27,14 +27,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     @IBOutlet weak var localTImeLabel: UILabel!
     
     @IBOutlet weak var inputAddress: UITextField!
-    
-    var savedCollection:[WeatherCollection] = []
     //Get the current location of the device
     var myLocationManager:CLLocationManager!
     
     //Geocoder object
     let geocoder = CLGeocoder()
     
+    var savedCollection:[WeatherCollection] = []
     override func viewDidLoad() {
         
         super.viewDidLoad()
@@ -115,7 +114,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                                 DispatchQueue.main.async {
                                     self.cityLabel.text = decodedItem.location.cityName
                                     self.temperatureLabel.text = "\(decodedItem.current.temperature)°C"
-                                    self.windSpeedLabel.text = "\(decodedItem.current.windSpeed)"
+       	                             self.windSpeedLabel.text = "\(decodedItem.current.windSpeed)"
                                     self.windDirectionLabel.text = "\(decodedItem.current.windDirection)"
                                     self.localTImeLabel.text = decodedItem.location.localTime
                                 }
@@ -130,20 +129,29 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             }
         }
     }
+    
 
     @IBAction func btnPressed(_ sender: Any) {
-        guard let nextScreen = storyboard?.instantiateViewController(identifier: "screenB") as? ScreenBViewController else {
-            print("Cannot find next screen")
+        // - navigate to the next screen
+        HistoryViewController().newCollection = savedCollection
+        guard let historyScreen = storyboard?.instantiateViewController(withIdentifier: "historyScreen") as? HistoryViewController else{
+            print("Error: cant find a screen")
             return
         }
-        
-        // - navigate to the next screen
-        self.navigationController?.pushViewController(nextScreen, animated: true)
+        historyScreen.newCollection = self.savedCollection
+        show(historyScreen,sender: self)
+        //self.navigationController?.pushViewController(nextScreen, animated: true)
     }
     
     @IBAction func saveButtonPressed(_ sender: Any) {
-        let savedWeather = WeatherCollection(city: cityLabel.text ?? "No city name given", temp: temperatureLabel.text ?? "No temperature given", ws: windSpeedLabel.text ?? "No wind speed given", w_dir: windDirectionLabel.text ?? "No wind direction given", localTime: localTImeLabel.text ?? "No local time given")
-        savedCollection.append(savedWeather)
+        print("Saving")
+        //Get the time string from the api localtime
+        let timeStr = localTImeLabel.text!.split(separator: " ")[1]
+        let savedWeather = WeatherCollection(city: cityLabel.text ?? "No city name given", temp: temperatureLabel.text ?? "No temperature given", ws: windSpeedLabel.text ?? "No wind speed given", w_dir: windDirectionLabel.text ?? "No wind direction given", localTime:String(timeStr))
+        
+        //Add weather to savedCollection
+        self.savedCollection.append(savedWeather)
+        HistoryViewController().newCollection = savedCollection
     }
 }
 

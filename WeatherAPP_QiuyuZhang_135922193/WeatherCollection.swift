@@ -6,12 +6,12 @@
 //
 
 import Foundation
-class WeatherCollection{
-    var cityName: String?
-    var temp:String?
-    var windSpeed:String?
-    var WindDirection:String?
-    var localTime:String?
+struct WeatherCollection{
+    var cityName: String
+    var temp:String
+    var windSpeed:String
+    var WindDirection:String
+    var localTime:String
     
     init(city:String, temp:String, ws:String, w_dir:String, localTime:String){
         self.cityName = city
